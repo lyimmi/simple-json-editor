@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.1
 Type=Application
-Name=json edit
-Comment=json edit
+Name=Simple JSON editor
+Comment=Simple JSON editor
 Icon=applications-other
 Exec=/home/user/json-editor
 Actions=

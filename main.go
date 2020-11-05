@@ -14,9 +14,9 @@ func main() {
 	app := wails.CreateApp(&wails.AppConfig{
 		Width:     1024,
 		Height:    768,
-		Title:     "JSON editor",
+		Title:     "Simple JSON editor",
 		JS:        js,
-		CSS:       css + jsonEditorCSS,
+		CSS:       jsonEditorCSS + css,
 		Colour:    "#131313",
 		Resizable: true,
 	})
