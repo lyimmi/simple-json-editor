@@ -1,0 +1,22 @@
+{
+    "name": "JSON editor",
+    "description": "A very simple json viewer / editor",
+    "author": {
+        "name": "Zámbó, Levente",
+        "email": "levente.zambo@gmail.com"
+    },
+    "version": "0.1.0",
+    "binaryname": "json-editor",
+    "frontend": {
+        "dir": "frontend",
+        "install": "npm install",
+        "build": "npm run build",
+        "bridge": "src",
+        "serve": "npm run serve"
+    },
+    "WailsVersion": "1.9.1",
+    "CrossCompile": false,
+    "Platform": "",
+    "Architecture": "",
+    "LdFlags": ""
+}
