@@ -13,7 +13,7 @@ body {
   height: 100%;
 }
 
-.jsoneditor-save {
+.jsoneditor-save, .jsoneditor-open, .jsoneditor-new {
   width: 40px !important;
   background: transparent !important;
 }

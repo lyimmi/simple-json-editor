@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -37,6 +38,31 @@ func (c *JSONFile) Start() {
 		check(err)
 		c.store.Set(string(dat))
 	}
+}
+
+//New a file
+func (c *JSONFile) New() bool {
+	c.path = ""
+	c.fileName = ""
+	c.r.Window.SetTitle("Simple JSON editor")
+	c.store.Set("{}")
+	return true
+}
+
+//Open a file
+func (c *JSONFile) Open() bool {
+	f := c.r.Dialog.SelectFile()
+	fmt.Println(f)
+	dat, err := ioutil.ReadFile(f)
+	if err != nil {
+		panic(err)
+		return false
+	}
+	c.path = f
+	c.fileName = filepath.Base(c.path)
+	c.r.Window.SetTitle("Simple JSON editor - " + c.fileName)
+	c.store.Set(string(dat))
+	return true
 }
 
 //Save a file
