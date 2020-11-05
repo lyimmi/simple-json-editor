@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=json edit
+Comment=json edit
+Icon=applications-other
+Exec=/home/user/json-editor
+Actions=
+Categories=Development;
