@@ -10,6 +10,7 @@
     "@wailsapp/runtime": "^1.0.10",
     "core-js": "^3.6.4",
     "jsoneditor": "^9.1.1",
+    "promise-polyfill": "8.2.0",
     "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {

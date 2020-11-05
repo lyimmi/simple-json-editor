@@ -1,6 +1,7 @@
 import 'core-js/stable';
 const runtime = require('@wailsapp/runtime');
 const JSONEditor = require("jsoneditor");
+import 'promise-polyfill/src/polyfill';
 
 // Main entry point
 function start() {
