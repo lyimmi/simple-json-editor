@@ -1,22 +1,28 @@
 package main
 
 import (
-	"github.com/leaanthony/mewn"
+	_ "embed"
+
 	"github.com/wailsapp/wails"
 )
 
-func main() {
+//go:embed frontend/build/main.js
+var js string
 
-	js := mewn.String("./frontend/build/main.js")
-	css := mewn.String("./frontend/build/main.css")
-	jsonEditorCSS := mewn.String("./frontend/build/jsoneditor.min.css")
+//go:embed frontend/build/main.css
+var css string
+
+//go:embed frontend/build/jsoneditor.min.css
+var jecss string
+
+func main() {
 
 	app := wails.CreateApp(&wails.AppConfig{
 		Width:     1024,
 		Height:    768,
 		Title:     "Simple JSON editor",
 		JS:        js,
-		CSS:       jsonEditorCSS + css,
+		CSS:       jecss + css,
 		Colour:    "#131313",
 		Resizable: true,
 	})
