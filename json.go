@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -52,10 +51,11 @@ func (c *JSONFile) New() bool {
 //Open a file
 func (c *JSONFile) Open() bool {
 	f := c.r.Dialog.SelectFile()
-	fmt.Println(f)
+	if f == "" {
+		return false
+	}
 	dat, err := ioutil.ReadFile(f)
 	if err != nil {
-		panic(err)
 		return false
 	}
 	c.path = f
