@@ -1,172 +1,161 @@
-import "core-js/stable";
-const runtime = require("@wailsapp/runtime");
-const JSONEditor = require("jsoneditor");
-import "promise-polyfill/src/polyfill";
 
-// Main entry point
-function start() {
-  if (!Element.prototype.matches) {
-    Element.prototype.matches =
-      Element.prototype.matchesSelector ||
-      Element.prototype.mozMatchesSelector ||
-      Element.prototype.msMatchesSelector ||
-      Element.prototype.oMatchesSelector ||
-      Element.prototype.webkitMatchesSelector ||
-      function (s) {
-        var matches = (this.document || this.ownerDocument).querySelectorAll(s),
-          i = matches.length;
-        while (--i >= 0 && matches.item(i) !== this) {}
-        return i > -1;
-      };
-  }
-  
-  var mystore = runtime.Store.New("Json");
-  var JSONIsSaved = true;
-  var prevState = "";
-  // Inject html
-  var app = document.getElementById("app");
-  app.innerHTML = `
-    <div id="jsoneditor" style="width: 100%; height: 100%;"></div>
-	`;
-  // create the editor
-  const container = document.getElementById("jsoneditor");
-  const options = {
-    mode: "code",
-    modes: ["text", "code", "view", "tree", "preview"],
-    onChangeText: function (jsonString) {
-      prevState = jsonString;
-      mystore.set(jsonString);
-      JSONIsSaved = false;
-    },
-    onModeChange: function () {
-      document.removeEventListener("click", newButtonListener);
-      document.removeEventListener("click", openButtonListener);
-      document.removeEventListener("click", saveButtonListener);
-      addNewButton();
-      addOpenButton();
-      addSaveButton();
-    },
-  };
-  const editor = new JSONEditor(container, options);
-  addNewButton();
-  addOpenButton();
-  addSaveButton();
+// create the editor
+const container = document.getElementById("jsoneditor");
 
-  mystore.subscribe(function (state) {
+let saved = true;
+
+const options = {
+  languages: {
+    hu: {
+      array: 'Tömb',
+      auto: 'Auto',
+      appendText: 'Hozzáad',
+      appendTitle: 'Adjon hozzá egy új \'auto\' típusú mezőt ezután a mező után (Ctrl+Shift+Ins)',
+      appendSubmenuTitle: 'Válassza ki a hozzáadandó mező típusát',
+      appendTitleAuto: 'Adjon hozzá egy új \'auto\' típusú mezőt (Ctrl+Shift+Ins)',
+      ascending: 'Növekvő',
+      ascendingTitle: 'Rendezze a(z) ${type} típus gyerekeit növekvő sorrendbe',
+      actionsMenu: 'Kattintson azt actions menü megnyitásához (Ctrl+M)',
+      cannotParseFieldError: 'Nem lehet a mezőt JSON-né alakítani',
+      cannotParseValueError: 'Nem lehet az értéket JSON-né alakítani',
+      collapseAll: 'Az összes mező összecsukása',
+      compactTitle: 'JSON adatok sűrítése, fölösleges karakterek eltávolítása (Ctrl+Shift+I)',
+      descending: 'Csökkenő',
+      descendingTitle: 'Rendezze a(z) ${type} típus gyerekeit csökkenő sorrendbe',
+      drag: 'Húzza a mezőt a mozgatáshoz (Alt+Shift+Arrows)',
+      duplicateKey: 'duplikált kulcs',
+      duplicateText: 'Duplikáció',
+      duplicateTitle: 'Kiválasztott mezők duplikálása (Ctrl+D)',
+      duplicateField: 'Duplikálja ezt a mezőt (Ctrl+D)',
+      duplicateFieldError: 'Mező nevének duplikálása',
+      empty: 'üres',
+      expandAll: 'Összes mező kinyitása',
+      expandTitle: 'Kattintson a mező ki/be csukásához (Ctrl+E). \n' +
+        'Ctrl+Kattintás az összes hozzátartozó elem ki/be csukásához.',
+      formatTitle: 'JSON adat formázása, megfelelő bekezdésekkel és soremelésekkel (Ctrl+I)',
+      insert: 'Beilleszt',
+      insertTitle: 'Illesszen be egy új \'auto\' típusú mezőt ez elé a mező elé (Ctrl+Ins)',
+      insertSub: 'Válassza ki a beillesztendő mező típusát',
+      object: 'Object',
+      ok: 'Ok',
+      redo: 'Vissza (Ctrl+Shift+Z)',
+      removeText: 'Eltávolítás',
+      removeTitle: 'Kiválasztott mezők eltávolítása (Ctrl+Del)',
+      removeField: 'Távolítsa el ezt a mezőt (Ctrl+Del)',
+      repairTitle: 'JSON javítása: idézőjelek és escape karakterek javítása, megjegyzések és JSONP jelölések eltávolítása, JavaScript objektumok JSON-né alakítása.',
+      searchTitle: 'Mezők és értékek keresése',
+      searchNextResultTitle: 'Következő eredmény (Enter)',
+      searchPreviousResultTitle: 'Előző eredmény (Shift + Enter)',
+      selectNode: 'Válasszon egy csomópontot...',
+      showAll: 'mind mutatása',
+      showMore: 'több mutatása',
+      showMoreStatus: 'megjelenítve ${visibleChilds} / ${totalChilds}.',
+      sort: 'Rendezés',
+      sortTitle: 'A(z) ${type} gyerekeinek rendezése',
+      sortTitleShort: 'Tartalom rendezése',
+      sortFieldLabel: 'Mező:',
+      sortDirectionLabel: 'Irány:',
+      sortFieldTitle: 'Válassza ki azt a beágyazott mezőt, amely alapján a tömböt vagy objektumot rendezni kívánja.',
+      sortAscending: 'Növekvő',
+      sortAscendingTitle: 'A kiválasztott mező növekvő sorrendbe rendezése',
+      sortDescending: 'Csökkenő',
+      sortDescendingTitle: 'A kiválasztott mező rendezése csökkenő sorrendben',
+      string: 'String',
+      transform: 'Átalakítás',
+      transformTitle: 'Szűrje, rendezze vagy alakítsa át ennek a(z) ${type} a gyermekeit.',
+      transformTitleShort: 'Szűrjön, rendezzen, vagy alakítsa át a tartalmat',
+      extract: 'Kivonat',
+      extractTitle: 'Vegye ki a következő típust ${type}',
+      transformQueryTitle: 'Adjon meg egy JMESPath-lekérdezést',
+      transformWizardLabel: 'Varázsló',
+      transformWizardFilter: 'Szűrő',
+      transformWizardSortBy: 'Rendezés',
+      transformWizardSelectFields: 'Mezők kiválasztása',
+      transformQueryLabel: 'Lekérdezés',
+      transformPreviewLabel: 'Előnézet',
+      type: 'Típus',
+      typeTitle: 'A mező típusának módosítása',
+      openUrl: 'Ctrl+Click, vagy Ctrl+Enter az url új ablakban történő megnyitásához',
+      undo: 'Utolsó művelet visszavonása (Ctrl+Z)',
+      validationCannotMove: 'Egy mezőt nem lehet áthelyezni a saját gyermekébe',
+      autoType: 'Mező típus "auto". ' +
+        'A mező típusa automatikusan meghatározásra kerül az értékből, ' +
+        'és lehet karakterlánc, szám, boolean vagy null.',
+      objectType: 'Field type "object". ' +
+        'Egy objektum kulcs/érték párok rendezetlen halmazát tartalmazza.',
+      arrayType: 'Mező típus "array". ' +
+        'Egy tömb értékek rendezett gyűjteményét tartalmazza.',
+      stringType: 'Mező típus "string". ' +
+        'A mező típusa nem az értékből kerül meghatározásra, hanem mindig stringként adódik vissza.',
+      modeEditorTitle: 'Szerkesztő mód váltása',
+      modeCodeText: 'Kód',
+      modeCodeTitle: 'Váltson kódkiemelőre',
+      modeFormText: 'Űrlap',
+      modeFormTitle: 'Váltás űrlapszerkesztőre',
+      modeTextText: 'Szöveg',
+      modeTextTitle: 'Váltás egyszerű szövegszerkesztőre',
+      modeTreeText: 'Fa',
+      modeTreeTitle: 'Faszerkesztőre váltás',
+      modeViewText: 'Megtekintés',
+      modeViewTitle: 'Váltás fa nézetre',
+      modePreviewText: 'Előnézet',
+      modePreviewTitle: 'Váltás előnézeti módra',
+      examples: 'Minták',
+      default: 'Alapértelmezett',
+      containsInvalidProperties: 'Érvénytelen tulajdonságokat tartalmaz',
+      containsInvalidItems: 'Érvénytelen elemeket tartalmaz'
+    },
+  },
+  mode: 'code',
+  modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
+  onModeChange: function (newMode, oldMode) {
+    console.log('Mode switched from', oldMode, 'to', newMode)
+  },
+  onChangeText: function (node, event) {
+    if (saved) {
+      saved = false;
+    }
     try {
-      console.log(state, prevState !== state);
-      if (prevState !== state) {
-        prevState = state;
-        editor.set(JSON.parse(state));
-      }
+      window.runtime.EventsEmit("json-edited", editor.getText());
     } catch (e) {
-      console.warn("invalid json");
+      console.warn(e)
+    }
+  }
+};
+
+let editor = new JSONEditor(container, options);
+
+// set json
+const initialJson = {};
+editor.set(initialJson);
+
+getCurrentFile();
+
+window.runtime.EventsOn("json-data", data => {
+  try {
+    let dJson = JSON.parse(data)
+    editor.set(dJson);
+  } catch (e) {
+    console.warn(e);
+    editor.set(data);
+  }
+});
+
+window.runtime.EventsOn("change-lang", data => {
+  options.language = data;
+  editor.destroy();
+  editor = new JSONEditor(container, options);
+  getCurrentFile();
+});
+
+
+function getCurrentFile() {
+  window.go.main.App.GetCurrentFile().then(data => {
+    try {
+      let dJson = JSON.parse(data);
+      editor.set(dJson);
+    } catch (e) {
+      console.warn(e);
     }
   });
-  window.backend.JSONFile.Start();
-
-  //Save event
-  document.onkeydown = function (e) {
-    if (e.key == "s" && e.ctrlKey == true) {
-      e.preventDefault();
-      window.backend.JSONFile.Save();
-      JSONIsSaved = true;
-      return false;
-    }
-  };
-
-  function addNewButton() {
-    var openButton = document.getElementById("newDocument");
-    if (!openButton) {
-      var menu = document.getElementsByClassName("jsoneditor-menu");
-      openButton = document.createElement("button");
-      openButton.setAttribute("class", "jsoneditor-new");
-      openButton.setAttribute("id", "newDocument");
-      openButton.innerHTML = "New";
-      menu[0].appendChild(openButton);
-
-      document.addEventListener("click", newButtonListener);
-    }
-  }
-
-  function addOpenButton() {
-    var openButton = document.getElementById("openDocument");
-    if (!openButton) {
-      var menu = document.getElementsByClassName("jsoneditor-menu");
-      openButton = document.createElement("button");
-      openButton.setAttribute("class", "jsoneditor-open");
-      openButton.setAttribute("id", "openDocument");
-      openButton.innerHTML = "Open";
-      menu[0].appendChild(openButton);
-
-      document.addEventListener("click", openButtonListener);
-    }
-  }
-
-  function addSaveButton() {
-    var saveButton = document.getElementById("saveDocument");
-    if (!saveButton) {
-      var menu = document.getElementsByClassName("jsoneditor-menu");
-      saveButton = document.createElement("button");
-      saveButton.setAttribute("class", "jsoneditor-save");
-      saveButton.setAttribute("id", "saveDocument");
-      saveButton.innerHTML = "Save";
-      menu[0].appendChild(saveButton);
-
-      document.addEventListener("click", saveButtonListener);
-    }
-  }
-
-  function newButtonListener(event) {
-    if (event.target.matches("#newDocument")) {
-      event.preventDefault();
-      if (!JSONIsSaved) {
-        var confirmation = confirm(
-          "You have unsaved changes, are you sure to open a new file?"
-        );
-        if (!confirmation) {
-          e.stopPropagation();
-        }
-      }
-      window.backend.JSONFile.New();
-      prevState = "";
-      JSONIsSaved = true;
-      return false;
-    }
-    return;
-  }
-
-  function openButtonListener(event) {
-    if (event.target.matches("#openDocument")) {
-      event.preventDefault();
-      if (!JSONIsSaved) {
-        var confirmation = confirm(
-          "You have unsaved changes, are you sure to open a new file?"
-        );
-        if (!confirmation) {
-          e.stopPropagation();
-        }
-      }
-      prevState = "";
-      window.backend.JSONFile.Open();
-      JSONIsSaved = true;
-      return true;
-    }
-    return;
-  }
-
-  function saveButtonListener(event) {
-    if (event.target.matches("#saveDocument")) {
-      event.preventDefault();
-      window.backend.JSONFile.Save().then(function (res) {
-        JSONIsSaved = res;
-        console.log(JSONIsSaved);
-      });
-      return false;
-    }
-    return;
-  }
 }
-
-// We provide our entrypoint as a callback for runtime.Init
-runtime.Init(start);

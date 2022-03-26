@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=JSON editor
+Comment=JSON editor
+Icon=/home/leventezambo/projects/json-editor/appicon.png
+Exec=/home/leventezambo/projects/json-editor/build/bin/json-editor
+Actions=
+Categories=Development;

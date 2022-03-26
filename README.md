@@ -1,16 +1,18 @@
-# simple-json-editor
-A very simple json viewer / editor made with:
- - https://wails.app/
- - https://github.com/josdejong/jsoneditor
+# README
 
-## set as default editor for json on linux
- - copy json-edit.desktop to your ~/.local/share/applications & edit its path to point to the binary on your machine
- - edit your /usr/share/applications/defaults.list add the following: appication/json=json-edit.desktop
+## About
 
+This template uses vanilla JS / HTML and CSS.
 
-## set as default editor for json on windows
- - simply set as default from the wizard
+You can configure the project by editing `wails.json`. More information about the project settings can be found
+here: https://wails.io/docs/reference/project-config
 
+## Live Development
 
+To run in live development mode, run `wails dev` in the project directory. The frontend dev server will run
+on http://localhost:34115. Open this in your browser to connect to your application.
 
+## Building
+
+For a production build, use `wails build`.
 
