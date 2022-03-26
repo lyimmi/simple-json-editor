@@ -14,7 +14,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-/build
-!build/appicon.png
+/build/bin
+/build/darwin
+/build/windows/*
+!/build/windows/icon.ico
+!/build/appicon.png
 node_modules/
 .idea
