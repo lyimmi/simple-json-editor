@@ -14,6 +14,7 @@ import (
 type App struct {
 	ctx           context.Context
 	userDir       string
+	userLocale    string
 	jsonFile      []byte
 	jsonFileName  string
 	jsonFilePath  string
@@ -21,9 +22,10 @@ type App struct {
 }
 
 // NewApp creates a new App application struct
-func NewApp() *App {
+func NewApp(locale string) *App {
 	return &App{
 		jsonFileSaved: true,
+		userLocale:    locale,
 	}
 }
 
@@ -35,6 +37,9 @@ func (a *App) startup(ctx context.Context) {
 	if err != nil {
 		panic(err)
 	}
+
+	runtime.EventsEmit(a.ctx, "change-lang", a.userLocale)
+
 	args := os.Args[1:]
 
 	if len(args) > 0 {

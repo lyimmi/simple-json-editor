@@ -9,6 +9,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
+	"github.com/cloudfoundry/jibber_jabber"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -22,11 +23,20 @@ var assets embed.FS
 var icon []byte
 
 func main() {
+
+	userLocale, err := jibber_jabber.DetectIETF()
+	if err != nil {
+		panic(err)
+	}
 	// Create an instance of the app structure
-	app := NewApp()
+	app := NewApp(userLocale)
+
+	isLocaleSelected := func(l string) bool {
+		return userLocale == l
+	}
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:             "Json editor",
 		Width:             1200,
 		Height:            800,
@@ -58,10 +68,10 @@ func main() {
 				}),
 			)),
 			menu.SubMenu("Language", menu.NewMenuFromItems(
-				menu.Radio("en", true, nil, func(cd *menu.CallbackData) {
+				menu.Radio("en", isLocaleSelected("en"), nil, func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "change-lang", "en")
 				}),
-				menu.Radio("hu", false, nil, func(cd *menu.CallbackData) {
+				menu.Radio("hu", isLocaleSelected("hu"), nil, func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "change-lang", "hu")
 				}),
 			)),
