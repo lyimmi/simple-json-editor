@@ -13,10 +13,11 @@ const go = {
       },
       /**
        * New
+       * @param {Array<number>} arg1 - Go Type: []uint8
        * @returns {Promise<boolean>}  - Go Type: bool
        */
-      "New": () => {
-        return window.go.main.App.New();
+      "New": (arg1) => {
+        return window.go.main.App.New(arg1);
       },
       /**
        * Open

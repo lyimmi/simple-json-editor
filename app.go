@@ -78,7 +78,7 @@ func (a *App) startup(ctx context.Context) {
 		}
 	})
 	runtime.EventsOn(a.ctx, "new-json", func(optionalData ...interface{}) {
-		a.New()
+		a.New(nil)
 	})
 	runtime.EventsOn(a.ctx, "open-json", func(optionalData ...interface{}) {
 		a.Open()
@@ -140,13 +140,15 @@ func (a *App) GetCurrentFile() string {
 	return string(a.jsonFile)
 }
 
-func (a *App) New() bool {
+func (a *App) New(data []byte) bool {
 	prevent := a.alertBeforeQuit()
 	if prevent {
 		return false
 	}
-
-	a.jsonFile = []byte("{}")
+	if data == nil {
+		data = []byte("{}")
+	}
+	a.jsonFile = data
 	a.jsonFileName = ""
 	a.jsonFilePath = ""
 	a.jsonFileSaved = true

@@ -4,7 +4,7 @@ export interface go {
   "main": {
     "App": {
 		GetCurrentFile():Promise<string>
-		New():Promise<boolean>
+		New(arg1:Array<number>):Promise<boolean>
 		Open():Promise<boolean>
 		Save():Promise<boolean>
     },
