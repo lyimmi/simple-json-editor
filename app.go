@@ -230,3 +230,11 @@ func (a *App) Save() bool {
 
 	return true
 }
+
+func (a *App) Alert(message string, title string) {
+	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:    runtime.WarningDialog,
+		Title:   title,
+		Message: message,
+	})
+}

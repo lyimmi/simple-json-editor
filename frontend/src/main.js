@@ -1,4 +1,10 @@
 
+window.alert = (msg, title) => {
+  msg = typeof msg !== "string" ? "" : msg
+  title = typeof title !== "string" ? "" : title
+  window.go.main.App.Alert(msg, title);
+}
+
 // create the editor
 const container = document.getElementById("jsoneditor");
 
@@ -217,6 +223,7 @@ window.addEventListener(
 );
 
 function handleDroppedFile(file) {
+  console.log(file.webkitRelativePath);
   let reader = file.stream().getReader(),
     result = new Uint8Array();
 

@@ -5,6 +5,15 @@ const go = {
   "main": {
     "App": {
       /**
+       * Alert
+       * @param {string} arg1 - Go Type: string
+       * @param {string} arg2 - Go Type: string
+       * @returns {Promise<void>} 
+       */
+      "Alert": (arg1, arg2) => {
+        return window.go.main.App.Alert(arg1, arg2);
+      },
+      /**
        * GetCurrentFile
        * @returns {Promise<string>}  - Go Type: string
        */
