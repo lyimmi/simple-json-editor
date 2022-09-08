@@ -1,31 +1,12 @@
 {
   "name": "json-editor",
-  "frontend:build": "",
-  "frontend:install": "",
-  "frontend:dev": "",
-  "frontend:dev:watcher": "",
-  "wailsjsdir": "./frontend",
-  "version": "2",
-  "Path": "",
-  "BuildDir": "",
   "outputfilename": "json-editor",
-  "OutputType": "",
-  "Platform": "",
-  "runNonNativeBuildHooks": false,
-  "postBuildHooks": null,
-  "Author": {
-    "name": "Zámbó, Levente",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Zámbó Levente",
     "email": "levente.zambo@gmail.com"
-  },
-  "Info": {
-    "companyName": "json-editor",
-    "productName": "json-editor",
-    "productVersion": "1.0.0",
-    "copyright": "Copyright.........",
-    "comments": "Built using Wails (https://wails.app)"
-  },
-  "debounceMS": 100,
-  "devserverurl": "http://localhost:34115",
-  "appargs": "",
-  "nsisType": ""
+  }
 }

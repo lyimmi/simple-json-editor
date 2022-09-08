@@ -1,8 +1,14 @@
+import "./assets/jsoneditor/jsoneditor.min.css"
+import "./main.css"
+import JSONEditor from "jsoneditor"
+
+import { EventsEmit, EventsOn } from '../wailsjs/runtime/runtime';
+import { GetCurrentFile, New, Alert } from "../wailsjs/go/main/App";
 
 window.alert = (msg, title) => {
   msg = typeof msg !== "string" ? "" : msg
   title = typeof title !== "string" ? "" : title
-  window.go.main.App.Alert(msg, title);
+  Alert(msg, title);
 }
 
 // create the editor
@@ -122,7 +128,7 @@ const options = {
       saved = false;
     }
     try {
-      window.runtime.EventsEmit("json-edited", editor.getText());
+      EventsEmit("json-edited", editor.getText());
     } catch (e) {
       console.warn(e)
     }
@@ -137,7 +143,7 @@ editor.set(initialJson);
 
 getCurrentFile();
 
-window.runtime.EventsOn("json-data", data => {
+EventsOn("json-data", data => {
   try {
     let dJson = JSON.parse(data)
     editor.set(dJson);
@@ -147,7 +153,7 @@ window.runtime.EventsOn("json-data", data => {
   }
 });
 
-window.runtime.EventsOn("change-lang", data => {
+EventsOn("change-lang", data => {
   options.language = data;
   editor.destroy();
   editor = new JSONEditor(container, options);
@@ -156,7 +162,7 @@ window.runtime.EventsOn("change-lang", data => {
 
 
 function getCurrentFile() {
-  window.go.main.App.GetCurrentFile().then(data => {
+  GetCurrentFile().then(data => {
     try {
       let dJson = JSON.parse(data);
       editor.set(dJson);
@@ -230,7 +236,7 @@ function handleDroppedFile(file) {
   reader.read().then(function processText({ done, value }) {
     if (done) {
 
-      window.go.main.App.New(btoa(new TextDecoder().decode(result))).then(data => {
+      New(btoa(new TextDecoder().decode(result))).then(data => {
         console.log(data)
       });
       return;

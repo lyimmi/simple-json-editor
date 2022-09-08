@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -45,7 +43,7 @@ func (a *App) startup(ctx context.Context) {
 	if len(args) > 0 {
 		a.jsonFilePath = args[0]
 		a.jsonFileName = filepath.Base(a.jsonFilePath)
-		a.jsonFile, err = ioutil.ReadFile(a.jsonFilePath)
+		a.jsonFile, err = os.ReadFile(a.jsonFilePath)
 		if err != nil {
 			runtime.EventsEmit(a.ctx, "error", err.Error())
 		}
@@ -183,7 +181,7 @@ func (a *App) Open() bool {
 	}
 
 	a.jsonFileName = filepath.Base(a.jsonFilePath)
-	a.jsonFile, err = ioutil.ReadFile(a.jsonFilePath)
+	a.jsonFile, err = os.ReadFile(a.jsonFilePath)
 	if err != nil {
 		runtime.EventsEmit(a.ctx, "error", err.Error())
 	}
@@ -214,9 +212,9 @@ func (a *App) Save() bool {
 		}
 	}
 
-	log.Println(a.jsonFilePath)
+	// log.Println(a.jsonFilePath)
 
-	err = ioutil.WriteFile(a.jsonFilePath, a.jsonFile, 0644)
+	err = os.WriteFile(a.jsonFilePath, a.jsonFile, 0644)
 	if err != nil {
 		runtime.EventsEmit(a.ctx, "error", err.Error())
 		return false

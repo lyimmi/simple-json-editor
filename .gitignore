@@ -21,3 +21,4 @@
 !/build/appicon.png
 node_modules/
 .idea
+frontend/dist

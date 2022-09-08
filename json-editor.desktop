@@ -1,9 +1,10 @@
 [Desktop Entry]
 Version=1.1
 Type=Application
+Categories=Development
 Name=JSON editor
-Comment=JSON editor
+Comment=A simple JSON editor program
+Terminal=false
 Icon=~/projects/simple-json-editor/build/appicon.png
 Exec=~/projects/simple-json-editor/build/bin/json-editor
-Actions=
-Categories=Development;
+MimeType=application/json;text/json
