@@ -139,10 +139,24 @@ func (a *App) GetCurrentFile() string {
 }
 
 func (a *App) New(data []byte) bool {
-	prevent := a.alertBeforeQuit()
-	if prevent {
+	res, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Title:   "Alert, closing file!",
+		Message: "Are you sure to close the current file and create a new one?",
+		Type:    runtime.QuestionDialog,
+		Buttons: []string{
+			"Yes",
+			"No",
+		},
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	if res == "No" {
 		return false
 	}
+
 	if data == nil {
 		data = []byte("{}")
 	}
@@ -166,7 +180,7 @@ func (a *App) Open() bool {
 	}
 
 	var err error
-	a.jsonFilePath, err = runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+	newPath, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
 		DefaultDirectory: a.userDir,
 		Title:            "select a json file",
 		Filters: []runtime.FileFilter{
@@ -178,6 +192,12 @@ func (a *App) Open() bool {
 	})
 	if err != nil {
 		runtime.EventsEmit(a.ctx, "error", err.Error())
+	}
+
+	if newPath != "" {
+		a.jsonFilePath = newPath
+	} else {
+		return false
 	}
 
 	a.jsonFileName = filepath.Base(a.jsonFilePath)
