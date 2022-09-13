@@ -153,23 +153,23 @@ func (a *App) New(data []byte) bool {
 		panic(err)
 	}
 
-	if res == "No" {
-		return false
+	if res == "Yes" {
+		if data == nil {
+			data = []byte("{}")
+		}
+		a.jsonFile = data
+		a.jsonFileName = ""
+		a.jsonFilePath = ""
+		a.jsonFileSaved = true
+
+		runtime.WindowSetTitle(a.ctx, a.jsonFileName)
+		runtime.EventsEmit(a.ctx, "json-saved", a.jsonFileSaved)
+		runtime.EventsEmit(a.ctx, "json-data", string(a.jsonFile))
+
+		return true
 	}
 
-	if data == nil {
-		data = []byte("{}")
-	}
-	a.jsonFile = data
-	a.jsonFileName = ""
-	a.jsonFilePath = ""
-	a.jsonFileSaved = true
-
-	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
-	runtime.EventsEmit(a.ctx, "json-saved", a.jsonFileSaved)
-	runtime.EventsEmit(a.ctx, "json-data", string(a.jsonFile))
-
-	return true
+	return false
 }
 
 func (a *App) Open() bool {
