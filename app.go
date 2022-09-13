@@ -64,15 +64,15 @@ func (a *App) startup(ctx context.Context) {
 		})
 	})
 	runtime.EventsOn(a.ctx, "json-edited", func(optionalData ...interface{}) {
-		runtime.WindowSetTitle(a.ctx, a.jsonFileName+"*")
-		a.jsonFileSaved = false
+		if a.jsonFileSaved {
+			runtime.WindowSetTitle(a.ctx, a.jsonFileName+"*")
+			a.jsonFileSaved = false
+		}
 		if len(optionalData) > 0 {
-			if d, ok := optionalData[0].([]interface{}); ok {
-				if len(d) > 0 {
-					a.jsonFile = []byte(d[0].(string))
-				}
+			d, ok := optionalData[0].(string)
+			if ok && len(d) > 0 {
+				a.jsonFile = []byte(d)
 			}
-
 		}
 	})
 	runtime.EventsOn(a.ctx, "new-json", func(optionalData ...interface{}) {
@@ -215,9 +215,12 @@ func (a *App) Open() bool {
 }
 
 func (a *App) Save() bool {
-	var err error
+	var (
+		jPath string
+		err   error
+	)
 	if a.jsonFilePath == "" {
-		a.jsonFilePath, err = runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		jPath, err = runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
 			DefaultDirectory: a.userDir,
 			Title:            "select a json file",
 			Filters: []runtime.FileFilter{
@@ -230,9 +233,12 @@ func (a *App) Save() bool {
 		if err != nil {
 			runtime.EventsEmit(a.ctx, "error", err.Error())
 		}
-	}
 
-	// log.Println(a.jsonFilePath)
+		if jPath == "" {
+			return false
+		}
+		a.jsonFilePath = jPath
+	}
 
 	err = os.WriteFile(a.jsonFilePath, a.jsonFile, 0644)
 	if err != nil {
