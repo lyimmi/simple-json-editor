@@ -2,7 +2,7 @@
 
 ## About
 
-This is a simple json enditor made with [wails](https://wails.io) and [jsoneditor](https://github.com/josdejong/jsoneditor)
+This is a simple json editor made with [wails](https://wails.io) and [jsoneditor](https://github.com/josdejong/jsoneditor)
 
 jsoneditor has nice features, so this is a wrapper around it, can be used to open json files as default appication.
 
