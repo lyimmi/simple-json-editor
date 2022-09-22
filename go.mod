@@ -1,10 +1,10 @@
 module changeme
 
-go 1.17
+go 1.18
 
 require (
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
-	github.com/wailsapp/wails/v2 v2.0.0-rc.1.1
+	github.com/wailsapp/wails/v2 v2.0.0
 )
 
 require (
