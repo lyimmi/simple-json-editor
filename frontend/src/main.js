@@ -1,6 +1,8 @@
-import "./assets/jsoneditor/jsoneditor.min.css"
+import "jsoneditor/dist/jsoneditor.min.css"
 import "./main.css"
 import JSONEditor from "jsoneditor"
+
+import "./darktheme.css"
 
 import { EventsEmit, EventsOn } from '../wailsjs/runtime/runtime';
 import { GetCurrentFile, New, Alert } from "../wailsjs/go/main/App";
@@ -158,6 +160,14 @@ EventsOn("change-lang", data => {
   editor.destroy();
   editor = new JSONEditor(container, options);
   getCurrentFile();
+});
+
+EventsOn("toggle-dark-mode", data => {
+  if (document.body.classList.contains("dark-mode")) {
+    document.body.classList.remove("dark-mode")
+  } else {
+    document.body.classList.add("dark-mode")
+  }
 });
 
 

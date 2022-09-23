@@ -5,8 +5,12 @@ export function Alert(arg1:string,arg2:string):Promise<void>;
 
 export function GetCurrentFile():Promise<string>;
 
+export function LoadSettings():Promise<void>;
+
 export function New(arg1:Array<number>):Promise<boolean>;
 
 export function Open():Promise<boolean>;
 
 export function Save():Promise<boolean>;
+
+export function SaveSettings():Promise<void>;

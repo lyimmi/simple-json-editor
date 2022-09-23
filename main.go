@@ -8,7 +8,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/menu/keys"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
-	"github.com/cloudfoundry/jibber_jabber"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 )
@@ -18,19 +17,15 @@ var assets embed.FS
 
 func main() {
 
-	userLocale, err := jibber_jabber.DetectIETF()
-	if err != nil {
-		panic(err)
-	}
 	// Create an instance of the app structure
-	app := NewApp(userLocale)
+	app := NewApp()
 
 	isLocaleSelected := func(l string) bool {
-		return userLocale == l
+		return app.UserLocale == l
 	}
 
 	// Create application with options
-	err = wails.Run(&options.App{
+	err := wails.Run(&options.App{
 		Title:             "Json editor",
 		Width:             1200,
 		Height:            800,
@@ -65,6 +60,11 @@ func main() {
 				}),
 				menu.Radio("hu", isLocaleSelected("hu"), nil, func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "change-lang", "hu")
+				}),
+			)),
+			menu.SubMenu("View", menu.NewMenuFromItems(
+				menu.Checkbox("Darkmode", app.DarkMode, nil, func(cd *menu.CallbackData) {
+					runtime.EventsEmit(app.ctx, "toggle-dark-mode")
 				}),
 			)),
 		),

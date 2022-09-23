@@ -10,6 +10,10 @@ export function GetCurrentFile() {
   return window['go']['main']['App']['GetCurrentFile']();
 }
 
+export function LoadSettings() {
+  return window['go']['main']['App']['LoadSettings']();
+}
+
 export function New(arg1) {
   return window['go']['main']['App']['New'](arg1);
 }
@@ -20,4 +24,8 @@ export function Open() {
 
 export function Save() {
   return window['go']['main']['App']['Save']();
+}
+
+export function SaveSettings() {
+  return window['go']['main']['App']['SaveSettings']();
 }
