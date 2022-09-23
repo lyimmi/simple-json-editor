@@ -1,0 +1,98 @@
+/* dark styling of the editor */
+.dark-mode div.jsoneditor,
+.dark-mode div.jsoneditor-menu {
+  border-color: #4b4b4b;
+}
+
+.dark-mode div.jsoneditor-menu {
+  background-color: #4b4b4b;
+}
+
+.dark-mode div.jsoneditor-tree,
+.dark-mode div.jsoneditor textarea.jsoneditor-text {
+  background-color: #666666;
+  color: #ffffff;
+}
+
+.dark-mode div.jsoneditor-field,
+.dark-mode div.jsoneditor-value {
+  color: #ffffff;
+}
+
+.dark-mode table.jsoneditor-search div.jsoneditor-frame {
+  background: #808080;
+}
+
+.dark-mode tr.jsoneditor-highlight,
+.dark-mode tr.jsoneditor-selected {
+  background-color: #808080;
+}
+
+.dark-mode div.jsoneditor-field[contenteditable=true]:focus,
+.dark-mode div.jsoneditor-field[contenteditable=true]:hover,
+.dark-mode div.jsoneditor-value[contenteditable=true]:focus,
+.dark-mode div.jsoneditor-value[contenteditable=true]:hover,
+.dark-mode div.jsoneditor-field.jsoneditor-highlight,
+.dark-mode div.jsoneditor-value.jsoneditor-highlight {
+  background-color: #808080;
+  border-color: #808080;
+}
+
+.dark-mode div.jsoneditor-field.highlight-active,
+.dark-mode div.jsoneditor-field.highlight-active:focus,
+.dark-mode div.jsoneditor-field.highlight-active:hover,
+.dark-mode div.jsoneditor-value.highlight-active,
+.dark-mode div.jsoneditor-value.highlight-active:focus,
+.dark-mode div.jsoneditor-value.highlight-active:hover {
+  background-color: #b1b1b1;
+  border-color: #b1b1b1;
+}
+
+.dark-mode div.jsoneditor-tree button:focus {
+  background-color: #868686;
+}
+
+/* coloring of JSON in tree mode */
+.dark-mode div.jsoneditor-readonly {
+  color: #acacac;
+}
+
+.dark-mode div.jsoneditor td.jsoneditor-separator {
+  color: #acacac;
+}
+
+.dark-mode div.jsoneditor-value.jsoneditor-string {
+  color: #00ff88;
+}
+
+.dark-mode div.jsoneditor-value.jsoneditor-object,
+.dark-mode div.jsoneditor-value.jsoneditor-array {
+  color: #bababa;
+}
+
+.dark-mode div.jsoneditor-value.jsoneditor-number {
+  color: #ff4040;
+}
+
+.dark-mode div.jsoneditor-value.jsoneditor-boolean {
+  color: #ff8048;
+}
+
+.dark-mode div.jsoneditor-value.jsoneditor-null {
+  color: #49a7fc;
+}
+
+.dark-mode div.jsoneditor-value.jsoneditor-invalid {
+  color: white;
+}
+
+.dark-mode .jsoneditor-statusbar {
+  background-color: #4b4b4b;
+  border-top: 1px solid #6b6b6b;
+}
+
+.dark-mode div.jsoneditor-statusbar>.jsoneditor-curserinfo-label,
+.dark-mode div.jsoneditor-statusbar>.jsoneditor-size-info,
+.dark-mode .jsoneditor-statusbar>.jsoneditor-curserinfo-val {
+  color: #bababa;
+}

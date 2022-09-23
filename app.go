@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -10,33 +12,38 @@ import (
 
 // App struct
 type App struct {
-	ctx           context.Context
-	userDir       string
-	userLocale    string
-	jsonFile      []byte
-	jsonFileName  string
-	jsonFilePath  string
-	jsonFileSaved bool
+	ctx           context.Context `json:"-"`
+	userDir       string          `json:"-"`
+	UserLocale    string          `json:"userLocale"`
+	jsonFile      []byte          `json:"-"`
+	jsonFileName  string          `json:"-"`
+	jsonFilePath  string          `json:"-"`
+	jsonFileSaved bool            `json:"-"`
+	DarkMode      bool            `json:"darkMode"`
 }
 
 // NewApp creates a new App application struct
-func NewApp(locale string) *App {
-	return &App{
+func NewApp() *App {
+	a := &App{
 		jsonFileSaved: true,
-		userLocale:    locale,
+		UserLocale:    "en",
+		DarkMode:      false,
 	}
+	var err error
+	a.userDir, err = os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	a.LoadSettings()
+	return a
 }
 
 // startup is called at application startup
 func (a *App) startup(ctx context.Context) {
 	var err error
 	a.ctx = ctx
-	a.userDir, err = os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
 
-	runtime.EventsEmit(a.ctx, "change-lang", a.userLocale)
+	runtime.EventsEmit(a.ctx, "change-lang", a.UserLocale)
 
 	args := os.Args[1:]
 
@@ -52,38 +59,7 @@ func (a *App) startup(ctx context.Context) {
 	}
 	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
 
-	runtime.EventsOn(a.ctx, "error", func(optionalData ...interface{}) {
-		msg := "An error occurred..."
-		if len(optionalData) > 0 {
-			msg = optionalData[0].(string)
-		}
-		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
-			Type:    runtime.ErrorDialog,
-			Title:   "Error",
-			Message: msg,
-		})
-	})
-	runtime.EventsOn(a.ctx, "json-edited", func(optionalData ...interface{}) {
-		if a.jsonFileSaved {
-			runtime.WindowSetTitle(a.ctx, a.jsonFileName+"*")
-			a.jsonFileSaved = false
-		}
-		if len(optionalData) > 0 {
-			d, ok := optionalData[0].(string)
-			if ok && len(d) > 0 {
-				a.jsonFile = []byte(d)
-			}
-		}
-	})
-	runtime.EventsOn(a.ctx, "new-json", func(optionalData ...interface{}) {
-		a.New(nil)
-	})
-	runtime.EventsOn(a.ctx, "open-json", func(optionalData ...interface{}) {
-		a.Open()
-	})
-	runtime.EventsOn(a.ctx, "save-json", func(optionalData ...interface{}) {
-		a.Save()
-	})
+	initListeners(a)
 }
 
 // domReady is called after front-end resources have been loaded
@@ -261,4 +237,56 @@ func (a *App) Alert(message string, title string) {
 		Title:   title,
 		Message: message,
 	})
+}
+
+func (a *App) LoadSettings() {
+	fp := path.Join(a.userDir, ".jsoneditor-settings")
+	if _, err := os.Stat(fp); err != nil {
+		return
+	}
+
+	d, err := os.ReadFile(fp)
+	if err != nil {
+		panic(err)
+	}
+
+	nA := App{
+		ctx:           a.ctx,
+		userDir:       a.userDir,
+		jsonFile:      a.jsonFile,
+		jsonFileName:  a.jsonFileName,
+		jsonFilePath:  a.jsonFilePath,
+		jsonFileSaved: a.jsonFileSaved,
+		UserLocale:    a.UserLocale,
+		DarkMode:      a.DarkMode,
+	}
+
+	err = json.Unmarshal(d, &nA)
+	if err != nil {
+		panic(err)
+	}
+
+	*a = nA
+}
+
+func (a *App) SaveSettings() {
+	d, err := json.Marshal(a)
+	if err != nil {
+		panic(err)
+	}
+	f, err := os.Create(path.Join(a.userDir, ".jsoneditor-settings"))
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	f.Write(d)
+}
+
+func (a *App) GetLocale() string {
+	return a.UserLocale
+}
+
+func (a *App) GetDarkMode() bool {
+	return a.DarkMode
 }
