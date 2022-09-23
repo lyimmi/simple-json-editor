@@ -1,6 +1,7 @@
 package main
 
 import (
+	"changeme/internal/lang"
 	"embed"
 	"log"
 
@@ -39,31 +40,31 @@ func main() {
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
 		Assets:            assets,
 		Menu: menu.NewMenuFromItems(
-			menu.SubMenu("File", menu.NewMenuFromItems(
-				menu.Text("New", keys.CmdOrCtrl("n"), func(cd *menu.CallbackData) {
+			menu.SubMenu(lang.Text(app.UserLocale, "file"), menu.NewMenuFromItems(
+				menu.Text(lang.Text(app.UserLocale, "file.new"), keys.CmdOrCtrl("n"), func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "new-json")
 				}),
-				menu.Text("Open", keys.CmdOrCtrl("o"), func(cd *menu.CallbackData) {
+				menu.Text(lang.Text(app.UserLocale, "file.open"), keys.CmdOrCtrl("o"), func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "open-json")
 				}),
-				menu.Text("Save", keys.CmdOrCtrl("s"), func(cd *menu.CallbackData) {
+				menu.Text(lang.Text(app.UserLocale, "file.save"), keys.CmdOrCtrl("s"), func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "save-json")
 				}),
 				menu.Separator(),
-				menu.Text("Quit", keys.CmdOrCtrl("q"), func(cd *menu.CallbackData) {
+				menu.Text(lang.Text(app.UserLocale, "file.quit"), keys.CmdOrCtrl("q"), func(cd *menu.CallbackData) {
 					runtime.Quit(app.ctx)
 				}),
 			)),
-			menu.SubMenu("Language", menu.NewMenuFromItems(
-				menu.Radio("en", isLocaleSelected("en"), nil, func(cd *menu.CallbackData) {
+			menu.SubMenu(lang.Text(app.UserLocale, "language"), menu.NewMenuFromItems(
+				menu.Radio(lang.Text(app.UserLocale, "language.en"), isLocaleSelected("en"), nil, func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "change-lang", "en")
 				}),
-				menu.Radio("hu", isLocaleSelected("hu"), nil, func(cd *menu.CallbackData) {
+				menu.Radio(lang.Text(app.UserLocale, "language.hu"), isLocaleSelected("hu"), nil, func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "change-lang", "hu")
 				}),
 			)),
-			menu.SubMenu("View", menu.NewMenuFromItems(
-				menu.Checkbox("Darkmode", app.DarkMode, nil, func(cd *menu.CallbackData) {
+			menu.SubMenu(lang.Text(app.UserLocale, "view"), menu.NewMenuFromItems(
+				menu.Checkbox(lang.Text(app.UserLocale, "view.darkmode"), app.DarkMode, nil, func(cd *menu.CallbackData) {
 					runtime.EventsEmit(app.ctx, "toggle-dark-mode")
 				}),
 			)),

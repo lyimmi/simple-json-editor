@@ -10,6 +10,14 @@ export function GetCurrentFile() {
   return window['go']['main']['App']['GetCurrentFile']();
 }
 
+export function GetDarkMode() {
+  return window['go']['main']['App']['GetDarkMode']();
+}
+
+export function GetLocale() {
+  return window['go']['main']['App']['GetLocale']();
+}
+
 export function LoadSettings() {
   return window['go']['main']['App']['LoadSettings']();
 }

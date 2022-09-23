@@ -29,6 +29,11 @@ func NewApp() *App {
 		UserLocale:    "en",
 		DarkMode:      false,
 	}
+	var err error
+	a.userDir, err = os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
 	a.LoadSettings()
 	return a
 }
@@ -37,10 +42,6 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	var err error
 	a.ctx = ctx
-	a.userDir, err = os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
 
 	runtime.EventsEmit(a.ctx, "change-lang", a.UserLocale)
 
@@ -58,51 +59,7 @@ func (a *App) startup(ctx context.Context) {
 	}
 	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
 
-	runtime.EventsOn(a.ctx, "error", func(optionalData ...interface{}) {
-		msg := "An error occurred..."
-		if len(optionalData) > 0 {
-			msg = optionalData[0].(string)
-		}
-		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
-			Type:    runtime.ErrorDialog,
-			Title:   "Error",
-			Message: msg,
-		})
-	})
-	runtime.EventsOn(a.ctx, "change-lang", func(optionalData ...interface{}) {
-		loc := "en"
-		if len(optionalData) > 0 {
-			loc = optionalData[0].(string)
-		}
-		a.UserLocale = loc
-	})
-
-	runtime.EventsOn(a.ctx, "toggle-dark-mode", func(optionalData ...interface{}) {
-		a.DarkMode = !a.DarkMode
-		a.SaveSettings()
-	})
-
-	runtime.EventsOn(a.ctx, "json-edited", func(optionalData ...interface{}) {
-		if a.jsonFileSaved {
-			runtime.WindowSetTitle(a.ctx, a.jsonFileName+"*")
-			a.jsonFileSaved = false
-		}
-		if len(optionalData) > 0 {
-			d, ok := optionalData[0].(string)
-			if ok && len(d) > 0 {
-				a.jsonFile = []byte(d)
-			}
-		}
-	})
-	runtime.EventsOn(a.ctx, "new-json", func(optionalData ...interface{}) {
-		a.New(nil)
-	})
-	runtime.EventsOn(a.ctx, "open-json", func(optionalData ...interface{}) {
-		a.Open()
-	})
-	runtime.EventsOn(a.ctx, "save-json", func(optionalData ...interface{}) {
-		a.Save()
-	})
+	initListeners(a)
 }
 
 // domReady is called after front-end resources have been loaded
@@ -284,31 +241,32 @@ func (a *App) Alert(message string, title string) {
 
 func (a *App) LoadSettings() {
 	fp := path.Join(a.userDir, ".jsoneditor-settings")
-	if _, err := os.Stat(fp); err == nil {
-		d, err := os.ReadFile(fp)
-		if err != nil {
-			panic(err)
-		}
-
-		nA := App{
-			ctx:           a.ctx,
-			userDir:       a.userDir,
-			jsonFile:      a.jsonFile,
-			jsonFileName:  a.jsonFileName,
-			jsonFilePath:  a.jsonFilePath,
-			jsonFileSaved: a.jsonFileSaved,
-			UserLocale:    a.UserLocale,
-			DarkMode:      a.DarkMode,
-		}
-
-		err = json.Unmarshal(d, &nA)
-		if err != nil {
-			panic(err)
-		}
-
-		*a = nA
+	if _, err := os.Stat(fp); err != nil {
+		return
 	}
 
+	d, err := os.ReadFile(fp)
+	if err != nil {
+		panic(err)
+	}
+
+	nA := App{
+		ctx:           a.ctx,
+		userDir:       a.userDir,
+		jsonFile:      a.jsonFile,
+		jsonFileName:  a.jsonFileName,
+		jsonFilePath:  a.jsonFilePath,
+		jsonFileSaved: a.jsonFileSaved,
+		UserLocale:    a.UserLocale,
+		DarkMode:      a.DarkMode,
+	}
+
+	err = json.Unmarshal(d, &nA)
+	if err != nil {
+		panic(err)
+	}
+
+	*a = nA
 }
 
 func (a *App) SaveSettings() {
@@ -323,4 +281,12 @@ func (a *App) SaveSettings() {
 	defer f.Close()
 
 	f.Write(d)
+}
+
+func (a *App) GetLocale() string {
+	return a.UserLocale
+}
+
+func (a *App) GetDarkMode() bool {
+	return a.DarkMode
 }
