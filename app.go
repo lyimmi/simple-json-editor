@@ -79,6 +79,7 @@ func (a *App) shutdown(ctx context.Context) {
 	// Perform your teardown here
 }
 
+// alertBeforeQuit opens an alert / confirm dialog before quitting if the editor has unsaved changes.
 func (a *App) alertBeforeQuit() bool {
 	if !a.jsonFileSaved {
 		res, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
@@ -110,10 +111,12 @@ func (a *App) alertBeforeQuit() bool {
 	return false
 }
 
+// GetCurrentFile returns the currently opened json file's contents.
 func (a *App) GetCurrentFile() string {
 	return string(a.jsonFile)
 }
 
+// New creates an empty editor.
 func (a *App) New(data []byte) bool {
 	res, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 		Title:   "Alert, closing file!",
@@ -148,6 +151,7 @@ func (a *App) New(data []byte) bool {
 	return false
 }
 
+// Open loads a file from disk.
 func (a *App) Open() bool {
 
 	prevent := a.alertBeforeQuit()
@@ -190,6 +194,7 @@ func (a *App) Open() bool {
 	return true
 }
 
+// Save stores the currently opened json file on disk.
 func (a *App) Save() bool {
 	var (
 		jPath string
@@ -231,6 +236,7 @@ func (a *App) Save() bool {
 	return true
 }
 
+// Alert shows an alert dialog.
 func (a *App) Alert(message string, title string) {
 	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 		Type:    runtime.WarningDialog,
@@ -239,6 +245,7 @@ func (a *App) Alert(message string, title string) {
 	})
 }
 
+// LoadSettings loads the app's configs from disk.
 func (a *App) LoadSettings() {
 	fp := path.Join(a.userDir, ".jsoneditor-settings")
 	if _, err := os.Stat(fp); err != nil {
@@ -269,6 +276,7 @@ func (a *App) LoadSettings() {
 	*a = nA
 }
 
+// SaveSettings stores the app's settings on disk.
 func (a *App) SaveSettings() {
 	d, err := json.Marshal(a)
 	if err != nil {
@@ -283,10 +291,12 @@ func (a *App) SaveSettings() {
 	f.Write(d)
 }
 
+// GetLocale returns the app's currently selected locale.
 func (a *App) GetLocale() string {
 	return a.UserLocale
 }
 
+// GetDarkMode returns if the app is in dark mode or not.
 func (a *App) GetDarkMode() bool {
 	return a.DarkMode
 }
