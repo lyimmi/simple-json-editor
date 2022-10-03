@@ -43,6 +43,8 @@ func (a *App) startup(ctx context.Context) {
 	var err error
 	a.ctx = ctx
 
+	initListeners(a)
+
 	runtime.EventsEmit(a.ctx, "change-lang", a.UserLocale)
 
 	args := os.Args[1:]
@@ -57,9 +59,9 @@ func (a *App) startup(ctx context.Context) {
 	} else {
 		a.jsonFileName = "untitled file"
 	}
+
 	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
 
-	initListeners(a)
 }
 
 // domReady is called after front-end resources have been loaded
