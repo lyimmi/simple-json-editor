@@ -35,38 +35,30 @@ func NewApp() *App {
 		panic(err)
 	}
 	a.LoadSettings()
+
+	args := os.Args[1:]
+	if len(args) > 0 {
+		a.jsonFilePath = args[0]
+		a.jsonFileName = filepath.Base(a.jsonFilePath)
+		a.jsonFile, _ = os.ReadFile(a.jsonFilePath)
+	} else {
+		a.jsonFileName = "untitled file"
+	}
+
 	return a
 }
 
 // startup is called at application startup
 func (a *App) startup(ctx context.Context) {
-	var err error
 	a.ctx = ctx
-
 	initListeners(a)
-
-	runtime.EventsEmit(a.ctx, "change-lang", a.UserLocale)
-
-	args := os.Args[1:]
-
-	if len(args) > 0 {
-		a.jsonFilePath = args[0]
-		a.jsonFileName = filepath.Base(a.jsonFilePath)
-		a.jsonFile, err = os.ReadFile(a.jsonFilePath)
-		if err != nil {
-			runtime.EventsEmit(a.ctx, "error", err.Error())
-		}
-	} else {
-		a.jsonFileName = "untitled file"
-	}
-
 	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
 
 }
 
 // domReady is called after front-end resources have been loaded
-func (a App) domReady(ctx context.Context) {
-	// Add your action here
+func (a *App) domReady(ctx context.Context) {
+	runtime.EventsEmit(a.ctx, "change-lang", a.UserLocale)
 }
 
 // beforeClose is called when the application is about to quit,

@@ -6,7 +6,7 @@ import "./darktheme.css"
 
 import { EventsEmit, EventsOn } from '../wailsjs/runtime/runtime';
 import { GetCurrentFile, New, Alert, GetDarkMode, GetLocale } from "../wailsjs/go/main/App";
-import langHu from "./languages/hu"
+import langHu from "./languages/hu";
 
 window.alert = (msg, title) => {
   msg = typeof msg !== "string" ? "" : msg
@@ -22,7 +22,7 @@ const editorOptions = {
   mode: 'code',
   modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
   onModeChange: function (newMode, oldMode) {
-    console.log('Mode switched from', oldMode, 'to', newMode)
+    console.log('Mode switched from', oldMode, 'to', newMode);
   },
   onChangeText: function (node, event) {
     if (saved) {
@@ -31,10 +31,10 @@ const editorOptions = {
     try {
       EventsEmit("json-edited", editor.getText());
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     }
   }
-};
+}
 
 let saved = true;
 let editor = null;
@@ -43,23 +43,25 @@ GetDarkMode().then(mode => {
   if (mode) {
     document.body.classList.add("dark-mode");
   }
-})
+});
 
 // create the editor
-const initialJson = {};
 const container = document.getElementById("jsoneditor");
 GetLocale().then(lang => {
   editorOptions.language = lang
   editor = new JSONEditor(container, editorOptions)
-  editor.set(initialJson);
-})
-
-
-getCurrentFile();
+  GetCurrentFile().then(data => {
+    try {
+      editor.set(JSON.parse(data));
+    } catch (e) {
+      console.warn(e);
+    }
+  });
+});
 
 EventsOn("json-data", data => {
   try {
-    let dJson = JSON.parse(data)
+    let dJson = JSON.parse(data);
     editor.set(dJson);
   } catch (e) {
     console.warn(e);
@@ -71,7 +73,14 @@ EventsOn("change-lang", data => {
   editorOptions.language = data;
   editor.destroy();
   editor = new JSONEditor(container, editorOptions);
-  getCurrentFile();
+  GetCurrentFile().then(data => {
+    try {
+      let dJson = JSON.parse(data);
+      editor.set(dJson);
+    } catch (e) {
+      console.warn(e);
+    }
+  });
 });
 
 EventsOn("toggle-dark-mode", data => {
@@ -82,17 +91,6 @@ EventsOn("toggle-dark-mode", data => {
   }
 });
 
-
-function getCurrentFile() {
-  GetCurrentFile().then(data => {
-    try {
-      let dJson = JSON.parse(data);
-      editor.set(dJson);
-    } catch (e) {
-      console.warn(e);
-    }
-  });
-}
 
 document.addEventListener("dragover", (e) => {
   e.preventDefault();

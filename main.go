@@ -39,6 +39,11 @@ func main() {
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
 		Assets:            assets,
+		OnStartup:         app.startup,
+		OnDomReady:        app.domReady,
+		OnBeforeClose:     app.beforeClose,
+		OnShutdown:        app.shutdown,
+		WindowStartState:  options.Normal,
 		Menu: menu.NewMenuFromItems(
 			menu.SubMenu(lang.Text(app.UserLocale, "file"), menu.NewMenuFromItems(
 				menu.Text(lang.Text(app.UserLocale, "file.new"), keys.CmdOrCtrl("n"), func(cd *menu.CallbackData) {
@@ -69,11 +74,6 @@ func main() {
 				}),
 			)),
 		),
-		OnStartup:        app.startup,
-		OnDomReady:       app.domReady,
-		OnBeforeClose:    app.beforeClose,
-		OnShutdown:       app.shutdown,
-		WindowStartState: options.Normal,
 		Bind: []interface{}{
 			app,
 		},
