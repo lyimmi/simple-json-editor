@@ -1,4 +1,4 @@
-module changeme
+module simplejsoneditor
 
 go 1.18
 

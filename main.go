@@ -1,9 +1,9 @@
 package main
 
 import (
-	"changeme/internal/lang"
 	"embed"
 	"log"
+	"simplejsoneditor/internal/lang"
 
 	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/menu/keys"
