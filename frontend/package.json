@@ -11,6 +11,6 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "jsoneditor": "^9.9.2"
+    "jsoneditor": "^9.10.0"
   }
 }
