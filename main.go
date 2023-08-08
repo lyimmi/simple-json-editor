@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"log"
 	"simplejsoneditor/internal/lang"
 
@@ -15,6 +16,9 @@ import (
 
 //go:embed frontend/dist
 var assets embed.FS
+
+//go:embed build/appicon.png
+var icon []byte
 
 func main() {
 
@@ -44,6 +48,9 @@ func main() {
 		OnBeforeClose:     app.beforeClose,
 		OnShutdown:        app.shutdown,
 		WindowStartState:  options.Normal,
+		Linux: &linux.Options{
+			Icon: icon,
+		},
 		Menu: menu.NewMenuFromItems(
 			menu.SubMenu(lang.Text(app.UserLocale, "file"), menu.NewMenuFromItems(
 				menu.Text(lang.Text(app.UserLocale, "file.new"), keys.CmdOrCtrl("n"), func(cd *menu.CallbackData) {
