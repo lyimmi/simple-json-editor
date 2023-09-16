@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -282,7 +283,10 @@ func (a *App) SaveSettings() {
 	}
 	defer f.Close()
 
-	f.Write(d)
+	_, err = f.Write(d)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // GetLocale returns the app's currently selected locale.

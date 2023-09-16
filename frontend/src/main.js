@@ -4,7 +4,7 @@ import JSONEditor from "jsoneditor"
 
 import "./darktheme.css"
 
-import { EventsEmit, EventsOn } from '../wailsjs/runtime/runtime';
+import { EventsEmit, EventsOn } from '../wailsjs/runtime';
 import { GetCurrentFile, New, Alert, GetDarkMode, GetLocale } from "../wailsjs/go/main/App";
 import langHu from "./languages/hu";
 
@@ -14,7 +14,7 @@ window.alert = (msg, title) => {
   Alert(msg, title);
 }
 
-const editorOptions = {
+const editorOptions= {
   languages: {
     hu: langHu,
   },
@@ -72,6 +72,7 @@ EventsOn("json-data", data => {
 EventsOn("change-lang", data => {
   editorOptions.language = data;
   editor.destroy();
+
   editor = new JSONEditor(container, editorOptions);
   GetCurrentFile().then(data => {
     try {

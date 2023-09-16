@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"log"
 	"simplejsoneditor/internal/lang"
@@ -41,13 +42,15 @@ func main() {
 		Frameless:         false,
 		StartHidden:       false,
 		HideWindowOnClose: false,
-		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 255},
-		Assets:            assets,
-		OnStartup:         app.startup,
-		OnDomReady:        app.domReady,
-		OnBeforeClose:     app.beforeClose,
-		OnShutdown:        app.shutdown,
-		WindowStartState:  options.Normal,
+		BackgroundColour:  &options.RGBA{R: 75, G: 75, B: 75, A: 1},
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		OnStartup:        app.startup,
+		OnDomReady:       app.domReady,
+		OnBeforeClose:    app.beforeClose,
+		OnShutdown:       app.shutdown,
+		WindowStartState: options.Normal,
 		Linux: &linux.Options{
 			Icon: icon,
 		},
