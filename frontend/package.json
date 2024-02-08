@@ -8,9 +8,9 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^4.5.0"
+    "vite": "^5.1.0"
   },
   "dependencies": {
-    "jsoneditor": "^9.10.4"
+    "jsoneditor": "^10.0.0"
   }
 }
