@@ -4,9 +4,11 @@ import JSONEditor from "jsoneditor"
 
 import "./darktheme.css"
 
-import { EventsEmit, EventsOn } from '../wailsjs/runtime';
+import {EventsEmit, EventsOn, OnFileDrop} from '../wailsjs/runtime';
 import { GetCurrentFile, New, Alert, GetDarkMode, GetLocale } from "../wailsjs/go/main/App";
 import langHu from "./languages/hu";
+
+OnFileDrop(() => {}, false)
 
 window.alert = (msg, title) => {
   msg = typeof msg !== "string" ? "" : msg
@@ -91,84 +93,3 @@ EventsOn("toggle-dark-mode", data => {
     document.body.classList.add("dark-mode");
   }
 });
-
-
-document.addEventListener("dragover", (e) => {
-  e.preventDefault();
-});
-
-window.addEventListener(
-  "drop",
-  (e) => {
-    e = e || event;
-    e.preventDefault();
-    if (e.dataTransfer.items) {
-      // Use DataTransferItemList interface to access the file(s)
-      for (let i = 0; i < e.dataTransfer.items.length; i++) {
-        // If dropped items aren't files, reject them
-        if (e.dataTransfer.items[i].kind === "file") {
-          try {
-            let file = e.dataTransfer.items[i].getAsFile();
-            if (file.type !== "application/json" && file.type !== "application/text") {
-              alert("only json file is allowed");
-              return;
-            }
-            if (file.size > 10000000) {
-              alert("file is greater than 10Mb");
-              return;
-            }
-            handleDroppedFile(file);
-            break;
-          } catch (error) {
-            console.error(error)
-          }
-        }
-      }
-    } else {
-      // todo: finish
-      // Use DataTransfer interface to access the file(s)
-      for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        try {
-          let file = e.dataTransfer.files[i]
-          if (file.type !== "application/json" && file.type !== "application/text") {
-            alert("only json file is allowed");
-            return;
-          }
-          if (file.size > 10000000) {
-            alert("file is greater than 10Mb");
-            return;
-          }
-          handleDroppedFile(file);
-          break;
-        } catch (error) {
-          console.error(error)
-        }
-      }
-    }
-  },
-  false
-);
-
-function handleDroppedFile(file) {
-  console.log(file.webkitRelativePath);
-  let reader = file.stream().getReader(),
-    result = new Uint8Array();
-
-  reader.read().then(function processText({ done, value }) {
-    if (done) {
-
-      New(btoa(new TextDecoder().decode(result))).then(data => {
-        console.log(data)
-      });
-      return;
-    }
-    if (typeof value !== "undefined") {
-      let tmp = new Uint8Array(result.length + value.length);
-      tmp.set(result);
-      tmp.set(value, result.length);
-      result = tmp;
-    }
-    // Read some more, and call this function again
-    return reader.read().then(processText);
-  });
-}

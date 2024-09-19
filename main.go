@@ -54,6 +54,9 @@ func main() {
 		Linux: &linux.Options{
 			Icon: icon,
 		},
+		DragAndDrop: &options.DragAndDrop{
+			EnableFileDrop: true,
+		},
 		Menu: menu.NewMenuFromItems(
 			menu.SubMenu(lang.Text(app.UserLocale, "file"), menu.NewMenuFromItems(
 				menu.Text(lang.Text(app.UserLocale, "file.new"), keys.CmdOrCtrl("n"), func(cd *menu.CallbackData) {

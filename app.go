@@ -3,24 +3,27 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
 type App struct {
-	ctx           context.Context `json:"-"`
-	userDir       string          `json:"-"`
-	UserLocale    string          `json:"userLocale"`
-	jsonFile      []byte          `json:"-"`
-	jsonFileName  string          `json:"-"`
-	jsonFilePath  string          `json:"-"`
-	jsonFileSaved bool            `json:"-"`
-	DarkMode      bool            `json:"darkMode"`
+	ctx           context.Context
+	userDir       string
+	UserLocale    string `json:"userLocale"`
+	jsonFile      []byte
+	jsonFileName  string
+	jsonFilePath  string
+	jsonFileSaved bool
+	DarkMode      bool `json:"darkMode"`
 }
 
 // NewApp creates a new App application struct
@@ -55,6 +58,53 @@ func (a *App) startup(ctx context.Context) {
 	initListeners(a)
 	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
 
+	runtime.OnFileDrop(a.ctx, func(x, y int, paths []string) {
+		if len(paths) == 0 {
+			return
+		}
+
+		errs := make([]string, 0)
+		for _, p := range paths {
+			d, err := os.ReadFile(p)
+			if err != nil {
+				a.Alert(fmt.Sprintf("failed to open file %s", p), "Error")
+			}
+			if err = validateJSONFile(p, d); err != nil {
+				errs = append(errs, err.Error())
+				continue
+			}
+
+			a.New(d)
+			return
+		}
+
+		a.Alert(fmt.Sprintf("No json file found errors: %s", strings.Join(errs, "\n")), "ERROR")
+	})
+}
+
+func validateJSONFile(jsonFilePath string, fileData []byte) error {
+	fi, err := os.Stat(jsonFilePath)
+	if err != nil {
+		return err
+	}
+	if fi.IsDir() {
+		return errors.New("file is a directory")
+	}
+
+	if fi.Size() > 30_000_000 {
+		return fmt.Errorf("file size too big: %d", fi.Size())
+	}
+
+	if json.Valid(fileData) {
+		return nil
+	}
+
+	parts := strings.Split(jsonFilePath, ".")
+	if parts[len(parts)-1] == "json" && ((fileData[0] == '{' && fileData[len(fileData)-1] == '}') || (fileData[0] == '[' && fileData[len(fileData)-1] == ']')) {
+		return nil
+	}
+
+	return errors.New("not a json file")
 }
 
 // domReady is called after front-end resources have been loaded
@@ -176,10 +226,18 @@ func (a *App) Open() bool {
 	}
 
 	a.jsonFileName = filepath.Base(a.jsonFilePath)
-	a.jsonFile, err = os.ReadFile(a.jsonFilePath)
+	fileData, err := os.ReadFile(a.jsonFilePath)
 	if err != nil {
 		runtime.EventsEmit(a.ctx, "error", err.Error())
+		return false
 	}
+
+	if err = validateJSONFile(a.jsonFilePath, fileData); err != nil {
+		runtime.EventsEmit(a.ctx, "error", err.Error())
+		return false
+	}
+
+	a.jsonFile = fileData
 	a.jsonFileSaved = true
 
 	runtime.WindowSetTitle(a.ctx, a.jsonFileName)
